@@ -47,6 +47,33 @@ ifconfig eth0 0.0.0.0
 #restart:
 systemctl restart networking.service
 
+#Create a variable for change IP:
+COUNTER=2
+NETWORK=192.168.240
+while [ $COUNTER -lt 254 ]
+do
+   if ping -c1 -w3 $NETWORK.$COUNTER >/dev/null 2>&1
+   then
+   COUNTER=$(( $COUNTER + 1 ))
+   else
+   IP=$NETWORK.$COUNTER
+   COUNTER=254
+   fi
+done
+
+#configure WI-FI:
+
+echo auto vlan0 >> /etc/network/interfaces
+echo iface vlan0 inet static >> /etc/network/interfaces
+echo  wpa-ssid TSSRARIEN >> /etc/network/interfaces
+echo  wpa-psk P455Support >> /etc/network/interfaces
+echo	address $IP >> /etc/network/interfaces
+echo	netmask 255.255.255.0 >> /etc/network/interfaces
+echo	gateway 192.168.240.1 >> /etc/network/interfaces
+
+#restart:
+systemctl restart networking.service
+
 #install sudo:
 apt install -y sudo mc
 
